@@ -1,10 +1,10 @@
 package com.yasminedpc.springdemo.Controller;
 
-import com.yasminedpc.springdemo.DTO.UserDTO;
 import com.yasminedpc.springdemo.Entity.User;
 import com.yasminedpc.springdemo.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,11 +20,15 @@ public class UserController {
      * add user
      */
 
+    @Autowired
+    public PasswordEncoder passwordEncoder;
+
+
     @PostMapping("/add")
     public String addUser(@RequestBody User user) {
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         userService.addUser(user);
-
-        return "success add user";
+        return "user added successfully";
     }
 
     /**
@@ -67,15 +71,8 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
 
-    /**
-     * update name
-     */
 
-    @PatchMapping("/update-name/{id}")
-    public ResponseEntity<Void> updateName(@PathVariable Integer id, @RequestBody UserDTO userDTO){
-        userService.updateName(id, userDTO);
 
-        return ResponseEntity.noContent().build();
-    }
+
 
 }

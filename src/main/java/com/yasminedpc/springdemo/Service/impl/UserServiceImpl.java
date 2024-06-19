@@ -3,10 +3,13 @@ package com.yasminedpc.springdemo.Service.impl;
 import com.yasminedpc.springdemo.Entity.User;
 import com.yasminedpc.springdemo.Service.UserService;
 
-import com.yasminedpc.springdemo.DTO.UserDTO;
 import com.yasminedpc.springdemo.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -14,7 +17,7 @@ import java.util.List;
 
 
 @Service
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl implements UserService,UserDetailsService {
     @Autowired
     private UserRepository userRepository;
 
@@ -23,6 +26,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public void addUser(User user) {
+
         userRepository.save(user);
     }
 
@@ -74,15 +78,18 @@ public class UserServiceImpl implements UserService {
         userRepository.delete(user);
     }
 
+
+
     @Override
-    public void updateName(Integer id, UserDTO userDTO) {
-//        check weather the user is in database or not
-        User user = userRepository
-                .findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid user Id:" + id));
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
 
-        user.setName(userDTO.getName());
+        List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()));
 
-        userRepository.save(user);
-
+        return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), authorities);
     }
+
+
+
 }

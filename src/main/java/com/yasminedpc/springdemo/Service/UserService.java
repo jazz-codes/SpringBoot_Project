@@ -1,6 +1,5 @@
 package com.yasminedpc.springdemo.Service;
 
-import com.yasminedpc.springdemo.DTO.UserDTO;
 import com.yasminedpc.springdemo.Entity.User;
 import org.springframework.stereotype.Service;
 
@@ -18,5 +17,8 @@ public interface UserService {
 
     void deleteUser(Integer id);
 
-    void updateName(Integer id, UserDTO userDTO);
+
+
+
+    //public UserDetails loadUserByUsername(String username);
 }
